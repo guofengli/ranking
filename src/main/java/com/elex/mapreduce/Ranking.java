@@ -73,18 +73,26 @@ public class Ranking {
 			float cpmWeight = 0.0f, cpcWeight = 0.0f, cpaWeight = 0.0f, otherWeight = 0.0f; 
 			if((confirmedDollar != null) && (!"".equals(confirmedDollar)) && (!"\\N".equals(confirmedDollar))){
 				if((reqidSum != null) && (!"".equals(reqidSum)) && (!"\\N".equals(reqidSum))){
-					cpmWeight = Float.parseFloat(confirmedDollar)/Float.parseFloat(reqidSum);
+					float tmpNum = Float.parseFloat(reqidSum);
+					if(tmpNum != 0.0f)
+						cpmWeight = Float.parseFloat(confirmedDollar)/tmpNum;
 				}
 				if((clickidSum != null) && (!"".equals(clickidSum)) && (!"\\N".equals(clickidSum))){
-					cpcWeight = Float.parseFloat(confirmedDollar)/Float.parseFloat(clickidSum);
+					float tmpNum = Float.parseFloat(clickidSum);
+					if(tmpNum != 0.0f)
+						cpcWeight = Float.parseFloat(confirmedDollar)/tmpNum;
 				}
 				if((confirmedSum != null) && (!"".equals(confirmedSum)) && (!"\\N".equals(confirmedSum))){
-					cpaWeight = Float.parseFloat(confirmedDollar)/Float.parseFloat(confirmedSum);
+					float tmpNum = Float.parseFloat(confirmedSum);
+					if(tmpNum != 0.0f)
+						cpaWeight = Float.parseFloat(confirmedDollar)/tmpNum;
 				}
 			}
 			if((otherDollar != null) && (!"".equals(otherDollar)) && (!"\\N".equals(otherDollar))){
 				if((otherSum != null) && (!"".equals(otherSum)) && (!"\\N".equals(otherSum))){
-					otherWeight = Float.parseFloat(otherDollar)/Float.parseFloat(otherSum);
+					float tmpNum = Float.parseFloat(otherSum);
+					if(tmpNum != 0.0f)
+						otherWeight = Float.parseFloat(otherDollar)/Float.parseFloat(otherSum);
 				}
 			}
 			return cpmWeight * 0.1f + cpcWeight * 0.20f + cpaWeight * 0.5f + otherWeight * 0.20f;
