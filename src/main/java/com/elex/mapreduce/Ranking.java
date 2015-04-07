@@ -51,7 +51,7 @@ public class Ranking {
 					StringBuffer strTMP = new StringBuffer();
 					for(int i = 0; i < 7; i++){
 						if(num[i] == 1)
-							strTMP.append( prefixs[i] + features[i] + "\t");
+							strTMP.append( prefixs[i] + features[i] + "\t" );
 					}
 					int mark = 1, i = 0;
 					while( mark == 1 ){
@@ -64,14 +64,33 @@ public class Ranking {
 					Text outputKey = new Text();
 					outputKey.set(strTMP.toString());
 					Text outputValue = new Text();
-					if(confirmedDollar == null || "".equals(confirmedDollar) ||"\\N".equals(confirmedDollar)){
-						outputValue.set(campid + "\t" + 0);
-					}else{
-						outputValue.set(campid + "\t" + confirmedDollar);
-					}
+					float weight = getWeight(confirmedSum, confirmedDollar, otherSum, otherDollar, reqidSum, clickidSum);
+					outputValue.set(campid + "\t" + weight);
 					context.write(outputKey, outputValue);
 				}
-		}	
+		}
+		public float getWeight(String confirmedSum, String confirmedDollar, String otherSum, String otherDollar, String reqidSum, String clickidSum){
+			float cpmWeight = 0.0f, cpcWeight = 0.0f, cpaWeight = 0.0f, otherWeight = 0.0f; 
+			if((confirmedDollar != null) && (!"".equals(confirmedDollar)) && (!"\\N".equals(confirmedDollar))){
+				if((reqidSum != null) && (!"".equals(reqidSum)) && (!"\\N".equals(reqidSum))){
+					cpmWeight = Float.parseFloat(confirmedDollar)/Float.parseFloat(reqidSum);
+				}
+				if((clickidSum != null) && (!"".equals(clickidSum)) && (!"\\N".equals(clickidSum))){
+					cpcWeight = Float.parseFloat(confirmedDollar)/Float.parseFloat(clickidSum);
+				}
+				if((confirmedSum != null) && (!"".equals(confirmedSum)) && (!"\\N".equals(confirmedSum))){
+					cpaWeight = Float.parseFloat(confirmedDollar)/Float.parseFloat(confirmedSum);
+				}
+			}
+			if((otherDollar != null) && (!"".equals(otherDollar)) && (!"\\N".equals(otherDollar))){
+				if((otherSum != null) && (!"".equals(otherSum)) && (!"\\N".equals(otherSum))){
+					otherWeight = Float.parseFloat(otherDollar)/Float.parseFloat(otherSum);
+				}
+			}
+			return cpmWeight * 0.1f + cpcWeight * 0.20f + cpaWeight * 0.5f + otherWeight * 0.20f;
+		}
+		
+		
 	}
 	public static class RankReduce extends Reducer<Text, Text, Text, Text>{
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException{
