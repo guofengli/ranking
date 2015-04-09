@@ -65,7 +65,7 @@ public class Ranking {
 					outputKey.set(strTMP.toString());
 					Text outputValue = new Text();
 					float weight = getWeight(confirmedSum, confirmedDollar, otherSum, otherDollar, reqidSum, clickidSum);
-					outputValue.set(campid + "\t" + weight);
+					outputValue.set(campid + ":" + weight);
 					context.write(outputKey, outputValue);
 				}
 		}
@@ -122,21 +122,27 @@ public class Ranking {
 				}	
 			});
 			Text outNull = new Text();
-			context.write(key, outNull);
+//			context.write(key, outNull);
+			StringBuffer outputStr = new StringBuffer();
+//			Text outputKey = new Text();
+			Text outputValue = new Text();
 			for(int i = 0, len = list.size(); i < len; i++){
 				Map.Entry<String, Float> map = list.get(i);
-				Text outputKey = new Text();
-				Text outputValue = new Text();
-				outputKey.set(map.getKey());
-				outputValue.set(map.getValue().toString());
-				context.write(outputKey, outputValue);
+//				Text outputKey = new Text();
+//				Text outputValue = new Text();
+//				outputKey.set(map.getKey());
+//				outputValue.set(map.getValue().toString());
+				outputStr.append(map.getKey() + ":" + map.getValue().toString() + "\t");
+//				context.write(outputKey, outputValue);
 			}
+			outputValue.set(outputStr.toString());
+			context.write(key, outputValue);
 		}
 	}
 	
 	public static void main(String []args) throws IOException, ClassNotFoundException, InterruptedException{
 		String inputPath = "/user/hive/warehouse/ares_merge/000000_0";
-		String outputPath = "/tmp/output";
+		String outputPath = "/tmp/outputjson";
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf,"ranking");
 		job.setJarByClass(Ranking.class);
